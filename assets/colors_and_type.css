@@ -1,0 +1,309 @@
+/* =============================================================
+   Truepoint People Solutions — Design Tokens
+   Colour, type, spacing, shadow, radius.
+   Source of truth: uploads/Brand.html (Brand Identity System 2026)
+   ============================================================= */
+
+/* ---------- Fonts (Google Fonts) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap');
+
+:root {
+  /* ---------- Primary palette ---------- */
+  --tp-midnight:   #1C2B4A;  /* Primary · Authority · Trust       */
+  --tp-jade:       #2D8B78;  /* Secondary · Growth · Vitality     */
+  --tp-amber:      #E8A030;  /* Accent · Energy · Optimism        */
+  --tp-slate:      #8C9CB0;  /* Neutral · Refinement · Space      */
+  --tp-ivory:      #F4EFE6;  /* Background · Warmth · Breathing   */
+  --tp-charcoal:   #2B2B2B;  /* Text · Foundation · Contrast      */
+
+  /* ---------- Tonal ramps (derived — warm, low-saturation) ---------- */
+  --tp-ivory-50:   #FBF8F2;   /* lightest ivory wash             */
+  --tp-ivory-100:  #F4EFE6;   /* = ivory                          */
+  --tp-ivory-200:  #EBE4D6;   /* subtle card tint / divider bg   */
+  --tp-ivory-300:  #DDD3BF;   /* hover on ivory                  */
+
+  --tp-slate-50:   #E5E9EE;
+  --tp-slate-100:  #C9D1DA;
+  --tp-slate-200:  #A9B5C3;
+  --tp-slate-300:  #8C9CB0;   /* = slate                          */
+  --tp-slate-400:  #6C7B8E;
+  --tp-slate-500:  #4E5B6F;
+  --tp-slate-600:  #35435A;
+
+  --tp-midnight-700: #263A60;
+  --tp-midnight-800: #1C2B4A;  /* = midnight                     */
+  --tp-midnight-900: #131F36;
+  --tp-midnight-950: #0B1426;
+
+  --tp-jade-300:   #6FB5A3;
+  --tp-jade-400:   #4CA08C;
+  --tp-jade-500:   #2D8B78;    /* = jade                         */
+  --tp-jade-600:   #236F60;
+  --tp-jade-700:   #1A5448;
+
+  --tp-amber-300:  #F2C072;
+  --tp-amber-400:  #EDB051;
+  --tp-amber-500:  #E8A030;    /* = amber                        */
+  --tp-amber-600:  #C7871F;
+  --tp-amber-700:  #9E6A17;
+
+  /* ---------- Semantic: surfaces ---------- */
+  --tp-bg:              var(--tp-ivory-100);
+  --tp-bg-raised:       #FFFFFF;
+  --tp-bg-sunken:       var(--tp-ivory-200);
+  --tp-bg-inverse:      var(--tp-midnight);
+  --tp-bg-inverse-soft: var(--tp-midnight-700);
+
+  /* ---------- Semantic: foreground ---------- */
+  --tp-fg-1:        var(--tp-charcoal);         /* primary text on light   */
+  --tp-fg-2:        var(--tp-slate-500);        /* secondary text          */
+  --tp-fg-3:        var(--tp-slate);            /* tertiary / captions     */
+  --tp-fg-on-dark-1: var(--tp-ivory);
+  --tp-fg-on-dark-2: rgba(244, 239, 230, 0.65);
+  --tp-fg-on-dark-3: rgba(244, 239, 230, 0.40);
+
+  /* ---------- Semantic: accents / actions ---------- */
+  --tp-accent:        var(--tp-jade);           /* interactive / growth    */
+  --tp-accent-hover:  var(--tp-jade-600);
+  --tp-highlight:     var(--tp-amber);          /* eyebrows / CTA on dark  */
+  --tp-highlight-hover: var(--tp-amber-600);
+  --tp-link:          var(--tp-jade);
+
+  /* ---------- Semantic: borders & dividers ---------- */
+  --tp-border:        rgba(140, 156, 176, 0.25);
+  --tp-border-strong: rgba(140, 156, 176, 0.45);
+  --tp-border-inverse: rgba(244, 239, 230, 0.18);
+
+  /* ---------- State colours (derived, warm-biased) ---------- */
+  --tp-success: #3C9A6E;   /* near-jade, slightly brighter    */
+  --tp-warning: #E8A030;   /* = amber                          */
+  --tp-danger:  #C0523F;   /* earthy terracotta, NOT pure red */
+  --tp-info:    #4C7CA6;   /* cooler midnight variant          */
+
+  /* ---------- Typography ---------- */
+  --tp-font-serif: "Cormorant Garamond", "EB Garamond", Georgia, "Times New Roman", serif;
+  --tp-font-sans:  "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --tp-font-mono:  "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* Type scale — keyed off a 16px base. Editorial serif for display,
+     geometric sans for UI. Generous line-heights for breathing room. */
+  --tp-text-xs:    12px;
+  --tp-text-sm:    13px;
+  --tp-text-base:  15px;     /* brand spec: 15–16 with 1.7 line-height */
+  --tp-text-md:    16px;
+  --tp-text-lg:    18px;
+  --tp-text-xl:    22px;
+
+  --tp-display-sm: 28px;
+  --tp-display-md: 36px;
+  --tp-display-lg: 46px;
+  --tp-display-xl: 62px;
+  --tp-display-2xl: 80px;
+
+  --tp-leading-tight:  1.05;
+  --tp-leading-snug:   1.2;
+  --tp-leading-body:   1.7;
+  --tp-leading-loose:  1.8;
+
+  --tp-tracking-eyebrow: 0.22em;   /* section labels, ALL-CAPS eyebrows */
+  --tp-tracking-label:   0.1em;    /* small caps labels                 */
+  --tp-tracking-button:  0.04em;   /* buttons                            */
+  --tp-tracking-tight:   -0.01em;  /* large display                      */
+
+  /* ---------- Spacing (4px base) ---------- */
+  --tp-space-1:  4px;
+  --tp-space-2:  8px;
+  --tp-space-3:  12px;
+  --tp-space-4:  16px;
+  --tp-space-5:  24px;
+  --tp-space-6:  32px;
+  --tp-space-7:  48px;
+  --tp-space-8:  64px;
+  --tp-space-9:  80px;
+  --tp-space-10: 96px;
+
+  /* ---------- Radius ---------- */
+  --tp-radius-xs:   4px;
+  --tp-radius-sm:   8px;
+  --tp-radius-md:   12px;
+  --tp-radius-lg:   16px;
+  --tp-radius-xl:   20px;
+  --tp-radius-2xl:  28px;
+  --tp-radius-pill: 999px;
+
+  /* ---------- Shadow (warm, midnight-tinted — NOT pure black) ---------- */
+  --tp-shadow-xs:  0 1px 2px rgba(28, 43, 74, 0.06);
+  --tp-shadow-sm:  0 2px 8px rgba(28, 43, 74, 0.06);
+  --tp-shadow-md:  0 4px 24px rgba(28, 43, 74, 0.08);
+  --tp-shadow-lg:  0 8px 48px rgba(28, 43, 74, 0.12);
+  --tp-shadow-xl:  0 16px 64px rgba(28, 43, 74, 0.18);
+  --tp-shadow-inset: inset 0 1px 0 rgba(244, 239, 230, 0.35);
+
+  /* ---------- Motion ---------- */
+  --tp-ease-standard:  cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tp-ease-gentle:    cubic-bezier(0.4, 0, 0.2, 1);
+  --tp-ease-out-soft:  cubic-bezier(0.22, 1, 0.36, 1);
+  --tp-dur-fast:   120ms;
+  --tp-dur-base:   200ms;
+  --tp-dur-slow:   400ms;
+}
+
+/* =============================================================
+   Semantic element resets — opt-in by wrapping in .tp-prose or
+   by applying tags within any element that sets
+   font-family: var(--tp-font-sans).
+   ============================================================= */
+
+.tp-root,
+.tp-prose {
+  font-family: var(--tp-font-sans);
+  color: var(--tp-fg-1);
+  background: var(--tp-bg);
+  font-size: var(--tp-text-base);
+  line-height: var(--tp-leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Display headings (editorial serif, light-weight) ---------- */
+.tp-display-xl,
+.tp-prose h1 {
+  font-family: var(--tp-font-serif);
+  font-weight: 300;
+  font-size: var(--tp-display-xl);
+  line-height: var(--tp-leading-tight);
+  letter-spacing: var(--tp-tracking-tight);
+  color: var(--tp-midnight);
+  margin: 0 0 var(--tp-space-5);
+}
+
+.tp-display-lg,
+.tp-prose h2 {
+  font-family: var(--tp-font-serif);
+  font-weight: 300;
+  font-size: var(--tp-display-lg);
+  line-height: var(--tp-leading-snug);
+  color: var(--tp-midnight);
+  margin: 0 0 var(--tp-space-4);
+}
+
+.tp-display-md,
+.tp-prose h3 {
+  font-family: var(--tp-font-serif);
+  font-weight: 400;
+  font-size: var(--tp-display-md);
+  line-height: var(--tp-leading-snug);
+  color: var(--tp-midnight);
+  margin: 0 0 var(--tp-space-3);
+}
+
+.tp-display-sm,
+.tp-prose h4 {
+  font-family: var(--tp-font-serif);
+  font-weight: 500;
+  font-size: var(--tp-display-sm);
+  line-height: var(--tp-leading-snug);
+  color: var(--tp-midnight);
+  margin: 0 0 var(--tp-space-3);
+}
+
+/* italic serif accent — brand signature "emphasis in jade" */
+.tp-prose em,
+.tp-serif em,
+.tp-accent-em {
+  font-style: italic;
+  color: var(--tp-jade);
+}
+
+/* ---------- UI / body ---------- */
+.tp-prose p,
+.tp-body {
+  font-family: var(--tp-font-sans);
+  font-size: var(--tp-text-base);
+  font-weight: 400;
+  line-height: var(--tp-leading-body);
+  color: var(--tp-fg-1);
+  margin: 0 0 var(--tp-space-4);
+  text-wrap: pretty;
+}
+
+.tp-body-lg {
+  font-size: var(--tp-text-lg);
+  line-height: var(--tp-leading-body);
+}
+
+.tp-body-sm,
+.tp-prose small {
+  font-size: var(--tp-text-sm);
+  line-height: 1.6;
+  color: var(--tp-fg-2);
+}
+
+.tp-caption {
+  font-size: var(--tp-text-xs);
+  line-height: 1.5;
+  color: var(--tp-fg-3);
+}
+
+/* Eyebrow / section label — small, spaced, uppercase */
+.tp-eyebrow {
+  font-family: var(--tp-font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: var(--tp-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--tp-amber);
+}
+
+.tp-eyebrow-slate {
+  color: var(--tp-slate);
+}
+
+.tp-label {
+  font-family: var(--tp-font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: var(--tp-tracking-label);
+  text-transform: uppercase;
+  color: var(--tp-slate);
+}
+
+/* Links — jade underline on hover */
+.tp-prose a,
+.tp-link {
+  color: var(--tp-jade);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--tp-dur-base) var(--tp-ease-standard),
+              color var(--tp-dur-base) var(--tp-ease-standard);
+}
+.tp-prose a:hover,
+.tp-link:hover {
+  color: var(--tp-jade-600);
+  border-bottom-color: currentColor;
+}
+
+/* Mono / code */
+.tp-prose code,
+.tp-code {
+  font-family: var(--tp-font-mono);
+  font-size: 0.92em;
+  padding: 1px 6px;
+  background: var(--tp-ivory-200);
+  border-radius: var(--tp-radius-xs);
+  color: var(--tp-midnight);
+}
+
+/* Pull quote — editorial italic serif */
+.tp-pullquote,
+.tp-prose blockquote {
+  font-family: var(--tp-font-serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: var(--tp-display-md);
+  line-height: var(--tp-leading-snug);
+  color: var(--tp-midnight);
+  border-left: 2px solid var(--tp-jade);
+  padding-left: var(--tp-space-5);
+  margin: var(--tp-space-7) 0;
+}
