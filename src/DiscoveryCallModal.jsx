@@ -78,6 +78,27 @@ function DiscoveryCallModal({ open, onClose }) {
   };
   const back = () => setStep(s => Math.max(s - 1, 0));
 
+  const submit = async () => {
+    try {
+      const { error } = await supabaseClient.from('discovery_calls').insert([{
+        topic: data.topic,
+        size: data.size,
+        urgency: data.urgency,
+        date: data.date,
+        slot: data.slot,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        note: data.note,
+      }]);
+      if (error) throw error;
+      setStep(s => s + 1);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setErrors({ submit: 'Failed to book. Please try again.' });
+    }
+  };
+
   const fmtDate = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const fmtDayNum = (d) => d.toLocaleDateString('en-GB', { day: 'numeric' });
   const fmtDayName = (d) => d.toLocaleDateString('en-GB', { weekday: 'short' });
@@ -290,7 +311,7 @@ function DiscoveryCallModal({ open, onClose }) {
             ) : (
               <span style={{ fontSize: 11, color: 'var(--tp-slate)', letterSpacing: '0.1em' }}>30 minutes · No obligation</span>
             )}
-            <button className="tp-btn tp-btn-primary" onClick={next}>
+            <button className="tp-btn tp-btn-primary" onClick={step === totalSteps - 1 ? submit : next}>
               {step === totalSteps - 1 ? 'Confirm booking →' : 'Continue →'}
             </button>
           </div>
