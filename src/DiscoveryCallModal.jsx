@@ -81,6 +81,12 @@ function DiscoveryCallModal({ open, onClose }) {
   const fmtDate = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const fmtDayNum = (d) => d.toLocaleDateString('en-GB', { day: 'numeric' });
   const fmtDayName = (d) => d.toLocaleDateString('en-GB', { weekday: 'short' });
+  const fmtPhone = (val) => {
+    const digits = val.replace(/\D/g, '').slice(0, 10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  };
   const weekLabel = () => {
     if (weekOffset === 0) return 'This week';
     if (weekOffset === 1) return 'Next week';
@@ -222,7 +228,7 @@ function DiscoveryCallModal({ open, onClose }) {
               </div>
               <div className="tp-field" style={{ marginBottom: 14 }}>
                 <label className="tp-label">Phone (optional)</label>
-                <input type="tel" value={data.phone} onChange={(e) => upd('phone', e.target.value)} placeholder="Optional" />
+                <input type="tel" value={data.phone} onChange={(e) => upd('phone', fmtPhone(e.target.value))} placeholder="(123) 456-7890" />
               </div>
               <div className="tp-field">
                 <label className="tp-label">Anything you'd like us to know before the call? (optional)</label>
