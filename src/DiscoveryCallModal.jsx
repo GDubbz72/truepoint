@@ -258,7 +258,6 @@ function DiscoveryCallModal({ open, onClose }) {
                 <textarea rows="3" value={data.note} onChange={(e) => upd('note', e.target.value)} placeholder="A sentence or two helps us come prepared." />
               </div>
               <input type="text" name="website" value={data.website} onChange={(e) => upd('website', e.target.value)} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} tabIndex="-1" autoComplete="off" />
-
             </div>
           )}
 
