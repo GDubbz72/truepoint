@@ -7,6 +7,7 @@ function DiscoveryCallModal({ open, onClose }) {
     topic: '', size: '', urgency: '',
     date: '', slot: '',
     name: '', email: '', phone: '', note: '',
+    website: '', // honeypot field
   });
   const [errors, setErrors] = useMState({});
   const [weekOffset, setWeekOffset] = useMState(0);
@@ -25,7 +26,7 @@ function DiscoveryCallModal({ open, onClose }) {
   useMEffect(() => {
     if (open) {
       setStep(0); setErrors({}); setWeekOffset(0);
-      setData({ topic: '', size: '', urgency: '', date: '', slot: '', name: '', email: '', phone: '', note: '' });
+      setData({ topic: '', size: '', urgency: '', date: '', slot: '', name: '', email: '', phone: '', note: '', website: '' });
     }
   }, [open]);
 
@@ -79,6 +80,7 @@ function DiscoveryCallModal({ open, onClose }) {
   const back = () => setStep(s => Math.max(s - 1, 0));
 
   const submit = async () => {
+    if (data.website) return setStep(s => s + 1); // honeypot triggered, silently succeed
     try {
       const { error } = await supabaseClient.from('discovery_calls').insert([{
         topic: data.topic,
@@ -255,6 +257,8 @@ function DiscoveryCallModal({ open, onClose }) {
                 <label className="tp-label">Anything you'd like us to know before the call? (optional)</label>
                 <textarea rows="3" value={data.note} onChange={(e) => upd('note', e.target.value)} placeholder="A sentence or two helps us come prepared." />
               </div>
+              <input type="text" name="website" value={data.website} onChange={(e) => upd('website', e.target.value)} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} tabIndex="-1" autoComplete="off" />
+
             </div>
           )}
 
