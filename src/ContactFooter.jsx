@@ -2,7 +2,7 @@
 const { useState: useFState } = React;
 
 function ContactForm({ onOpenCall }) {
-  const [form, setForm] = useFState({ name: '', email: '', company: '', topic: 'HR Consulting', note: '' });
+  const [form, setForm] = useFState({ name: '', email: '', company: '', topic: 'HR Consulting', note: '', website: '' });
   const [errors, setErrors] = useFState({});
   const [sent, setSent] = useFState(false);
   const upd = (k) => (e) => {
@@ -17,11 +17,25 @@ function ContactForm({ onOpenCall }) {
     if (!form.note.trim() || form.note.trim().length < 10) e.note = 'A sentence or two is plenty — tell us what\'s on your mind.';
     return e;
   };
-  const onSubmit = (ev) => {
+  const onSubmit = async (ev) => {
     ev.preventDefault();
+    if (form.website) return setSent(true); // honeypot triggered, silently succeed
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    setSent(true);
+    try {
+      const { error } = await supabaseClient.from('contact_submissions').insert([{
+        name: form.name,
+        email: form.email,
+        company: form.company || null,
+        topic: form.topic,
+        note: form.note,
+      }]);
+      if (error) throw error;
+      setSent(true);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setErrors({ submit: 'Failed to send. Please try again.' });
+    }
   };
 
   return (
@@ -93,6 +107,7 @@ function ContactForm({ onOpenCall }) {
                 <textarea id="f-note" rows="4" value={form.note} onChange={upd('note')} placeholder="A sentence or two is plenty." />
                 {errors.note && <div className="tp-field-error">{errors.note}</div>}
               </div>
+              <input type="text" name="website" value={form.website} onChange={upd('website')} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} tabIndex="-1" autoComplete="off" />
               <button type="submit" className="tp-btn tp-btn-primary tp-btn-full tp-btn-lg">Send message →</button>
               <p className="tp-form-note">Your note goes straight to a Truepoint partner. We'll reply within one working day.</p>
             </form>
@@ -101,7 +116,7 @@ function ContactForm({ onOpenCall }) {
               <div className="tp-eyebrow tp-eyebrow--amber">Message received</div>
               <h3 className="tp-form-sent-title">We'll be in touch<br/><em>very soon</em></h3>
               <p className="tp-contact-body">Thanks, {form.name.split(' ')[0] || 'there'}. Your note is with us. Expect a personal reply from a Truepoint partner within one working day.</p>
-              <button className="tp-btn tp-btn-outline" onClick={() => { setSent(false); setForm({ name: '', email: '', company: '', topic: 'HR Consulting', note: '' }); }}>Send another</button>
+              <button className="tp-btn tp-btn-outline" onClick={() => { setSent(false); setForm({ name: '', email: '', company: '', topic: 'HR Consulting', note: '', website: '' }); }}>Send another</button>
             </div>
           )}
         </div>

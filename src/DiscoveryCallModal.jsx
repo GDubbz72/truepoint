@@ -7,6 +7,7 @@ function DiscoveryCallModal({ open, onClose }) {
     topic: '', size: '', urgency: '',
     date: '', slot: '',
     name: '', email: '', phone: '', note: '',
+    website: '', // honeypot field
   });
   const [errors, setErrors] = useMState({});
   const [weekOffset, setWeekOffset] = useMState(0);
@@ -25,7 +26,7 @@ function DiscoveryCallModal({ open, onClose }) {
   useMEffect(() => {
     if (open) {
       setStep(0); setErrors({}); setWeekOffset(0);
-      setData({ topic: '', size: '', urgency: '', date: '', slot: '', name: '', email: '', phone: '', note: '' });
+      setData({ topic: '', size: '', urgency: '', date: '', slot: '', name: '', email: '', phone: '', note: '', website: '' });
     }
   }, [open]);
 
@@ -77,6 +78,28 @@ function DiscoveryCallModal({ open, onClose }) {
     setStep(s => Math.min(s + 1, totalSteps));
   };
   const back = () => setStep(s => Math.max(s - 1, 0));
+
+  const submit = async () => {
+    if (data.website) return setStep(s => s + 1); // honeypot triggered, silently succeed
+    try {
+      const { error } = await supabaseClient.from('discovery_calls').insert([{
+        topic: data.topic,
+        size: data.size,
+        urgency: data.urgency,
+        date: data.date,
+        slot: data.slot,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        note: data.note,
+      }]);
+      if (error) throw error;
+      setStep(s => s + 1);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setErrors({ submit: 'Failed to book. Please try again.' });
+    }
+  };
 
   const fmtDate = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const fmtDayNum = (d) => d.toLocaleDateString('en-GB', { day: 'numeric' });
@@ -234,6 +257,7 @@ function DiscoveryCallModal({ open, onClose }) {
                 <label className="tp-label">Anything you'd like us to know before the call? (optional)</label>
                 <textarea rows="3" value={data.note} onChange={(e) => upd('note', e.target.value)} placeholder="A sentence or two helps us come prepared." />
               </div>
+              <input type="text" name="website" value={data.website} onChange={(e) => upd('website', e.target.value)} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} tabIndex="-1" autoComplete="off" />
             </div>
           )}
 
@@ -290,7 +314,7 @@ function DiscoveryCallModal({ open, onClose }) {
             ) : (
               <span style={{ fontSize: 11, color: 'var(--tp-slate)', letterSpacing: '0.1em' }}>30 minutes · No obligation</span>
             )}
-            <button className="tp-btn tp-btn-primary" onClick={next}>
+            <button className="tp-btn tp-btn-primary" onClick={step === totalSteps - 1 ? submit : next}>
               {step === totalSteps - 1 ? 'Confirm booking →' : 'Continue →'}
             </button>
           </div>
