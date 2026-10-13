@@ -261,7 +261,6 @@ function DiscoveryCallModal({ open, onClose }) {
               <span style={{ fontSize: 11, color: 'var(--tp-slate)', letterSpacing: '0.1em' }}>30 minutes · No obligation</span>
             )}
             <button className="tp-btn tp-btn-primary" onClick={() => {
-              console.log('Button clicked - step:', step, 'totalSteps:', totalSteps, 'should submit:', step === totalSteps - 1);
               if (step === totalSteps - 1) {
                 handleSubmit();
               } else {
