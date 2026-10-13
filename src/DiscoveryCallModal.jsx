@@ -10,6 +10,7 @@ function DiscoveryCallModal({ open, onClose }) {
     website: '', // honeypot field
   });
   const [errors, setErrors] = useMState({});
+  const [isSubmitting, setIsSubmitting] = useMState(false);
   const isMountedRef = React.useRef(true);
 
   useMEffect(() => {
@@ -79,6 +80,10 @@ function DiscoveryCallModal({ open, onClose }) {
       return;
     }
 
+    if (isSubmitting) return; // Prevent double submission
+    setIsSubmitting(true);
+
+    const today = new Date().toISOString().split('T')[0];
     const payload = {
       topic: data.topic,
       size: data.size,
@@ -87,27 +92,20 @@ function DiscoveryCallModal({ open, onClose }) {
       email: data.email,
       phone: data.phone || null,
       note: data.note || null,
+      date: today,
+      slot: 'TBD',
     };
 
-    // Call Supabase Edge Function for server-side validation and rate limiting
-    const supabaseUrl = SUPABASE_URL;
-    const functionUrl = `${supabaseUrl}/functions/v1/submit-discovery-call`;
-
-    fetch(functionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify(payload),
-    }).then(res => res.json()).then(data => {
+    supabaseClient.from('discovery_calls').insert([payload]).then(({ error }) => {
+      setIsSubmitting(false);
       if (!isMountedRef.current) return;
-      if (data.error) {
-        setErrors({ submit: data.error });
+      if (error) {
+        setErrors({ submit: 'Failed: ' + error.message });
       } else {
         setStep(s => s + 1);
       }
     }).catch(err => {
+      setIsSubmitting(false);
       if (!isMountedRef.current) return;
       setErrors({ submit: 'Error: ' + err.message });
     });
@@ -268,14 +266,18 @@ function DiscoveryCallModal({ open, onClose }) {
             ) : (
               <span style={{ fontSize: 11, color: 'var(--tp-slate)', letterSpacing: '0.1em' }}>30 minutes · No obligation</span>
             )}
-            <button className="tp-btn tp-btn-primary" onClick={() => {
-              if (step === totalSteps - 1) {
-                handleSubmit();
-              } else {
-                next();
-              }
-            }}>
-              {step === totalSteps - 1 ? 'Confirm booking →' : 'Continue →'}
+            <button
+              className="tp-btn tp-btn-primary"
+              onClick={() => {
+                if (step === totalSteps - 1) {
+                  handleSubmit();
+                } else {
+                  next();
+                }
+              }}
+              disabled={isSubmitting}
+              style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+              {isSubmitting ? 'Submitting...' : (step === totalSteps - 1 ? 'Confirm booking →' : 'Continue →')}
             </button>
           </div>
         )}
