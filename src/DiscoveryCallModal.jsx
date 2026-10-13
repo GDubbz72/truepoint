@@ -77,7 +77,6 @@ function DiscoveryCallModal({ open, onClose }) {
   const back = () => setStep(s => Math.max(s - 1, 0));
 
   const handleSubmit = () => {
-    console.log('Submit clicked!');
     if (data.website) {
       setStep(s => s + 1);
       return;
@@ -96,17 +95,13 @@ function DiscoveryCallModal({ open, onClose }) {
       slot: 'TBD',
     };
 
-    console.log('Submitting to Supabase:', payload);
     supabaseClient.from('discovery_calls').insert([payload]).then(({ error }) => {
       if (error) {
-        console.error('Supabase error:', error);
         setErrors({ submit: 'Failed: ' + error.message });
       } else {
-        console.log('Supabase success!');
         setStep(s => s + 1);
       }
     }).catch(err => {
-      console.error('Request error:', err);
       setErrors({ submit: 'Error: ' + err.message });
     });
   };
