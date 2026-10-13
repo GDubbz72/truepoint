@@ -2,6 +2,40 @@
 const { useState: useTState } = React;
 
 function TestimonialPlaceholder() {
+  const testimonials = [
+    {
+      quote: "We have been working with TruePoint People Solutions over the past several months on a range of Human Resources initiatives. Their support has included strategic HR advisory, employee relations, training, and the development and enhancement of our HR policies and practices. What we value most is their ability to understand our business and provide clear, practical guidance that works for our organization. They are responsive, knowledgeable, and bring a thoughtful approach to the HR challenges and opportunities we encounter. TruePoint People Solutions has become a trusted HR partner to our team. We continue to work with them on additional initiatives and value the expertise and ongoing support they bring to our organization.",
+      services: "HR Advisory • Employee Relations • Training • Policies",
+      company: "Space Database Inc.",
+      people: [
+        { name: "Greg Mounsey", title: "President/CEO" }
+      ]
+    },
+    {
+      quote: "We engaged TruePoint People Solutions to support our organization with the development of comprehensive Standard Operating Procedures, HR policies and procedures, and HR advisory services. They took the time to understand our culture, operational needs, and business goals, and developed practical solutions that aligned with our organization's long-term direction. Their work has helped strengthen our operational efficiency, compliance, employee engagement, and overall workplace practices. We have been impressed by their professionalism, attention to detail, responsiveness, and commitment to delivering quality solutions. TruePoint People Solutions has been a valued HR partner to our organization, and we would highly recommend their services.",
+      services: "HR Advisory • Policies & Procedures • SOP Development • Compliance",
+      company: "CLS-2009",
+      people: [
+        { name: "Paul Araya", title: "CEO" },
+        { name: "Francis Best", title: "Operations Director" }
+      ]
+    },
+    {
+      quote: "TruePoint People Solutions worked with us to review and strengthen our internal Human Resources function. Their support included assessing our existing HR practices, implementing policies and processes, providing employee relations guidance, delivering training, and identifying opportunities to improve overall HR effectiveness. An important part of the engagement was the coaching and mentorship provided to our internal HR team. Their practical guidance helped strengthen internal capability while establishing more effective and sustainable HR practices. TruePoint People Solutions brought a strong combination of strategic HR insight and practical experience to our organization, helping us enhance both our people practices and the effectiveness of our HR function.",
+      services: "HR Assessment • Employee Relations • Training • HR Coaching",
+      company: "TENG Inc.",
+      people: [
+        { name: "Eric Wiess", title: "Operations Director" }
+      ]
+    }
+  ];
+
+  const [current, setCurrent] = useTState(0);
+  const t = testimonials[current];
+
+  const next = () => setCurrent((current + 1) % testimonials.length);
+  const prev = () => setCurrent((current - 1 + testimonials.length) % testimonials.length);
+
   return (
     <section className="tp-testimonial">
       <img className="tp-testimonial-watermark" src="assets/logo-mnemonic-ivory.svg" alt="" />
@@ -11,17 +45,29 @@ function TestimonialPlaceholder() {
         </div>
         <div className="tp-testimonial-placeholder">
           <blockquote className="tp-testimonial-quote">
-            "A quote from a real client will live here — a sentence about
-            getting unstuck, finding clarity, or leading with more confidence
-            after working with Truepoint."
+            "{t.quote}"
           </blockquote>
           <div className="tp-testimonial-cite">
             <div className="tp-testimonial-avatar" aria-hidden="true">—</div>
             <div>
-              <div className="tp-testimonial-name">Client name</div>
-              <div className="tp-testimonial-role">Role · Company</div>
+              <div className="tp-testimonial-services" style={{ fontSize: '0.875rem', color: '#999', marginBottom: '0.5rem' }}>
+                {t.services}
+              </div>
+              <div className="tp-testimonial-company" style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
+                {t.company}
+              </div>
+              {t.people.map((person, i) => (
+                <div key={i} className="tp-testimonial-name">
+                  {person.name}<span style={{ fontWeight: 'normal', color: '#666' }}> · {person.title}</span>
+                </div>
+              ))}
             </div>
           </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+          <button onClick={prev} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>← Previous</button>
+          <span style={{ alignSelf: 'center' }}>{current + 1} / {testimonials.length}</span>
+          <button onClick={next} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>Next →</button>
         </div>
         <div className="tp-logos-label">Trusted by teams and leaders — logos coming</div>
         <div className="tp-logos-row">
