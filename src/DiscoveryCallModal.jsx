@@ -10,7 +10,13 @@ function DiscoveryCallModal({ open, onClose }) {
     website: '', // honeypot field
   });
   const [errors, setErrors] = useMState({});
-  const [weekOffset, setWeekOffset] = useMState(0);
+  const isMountedRef = React.useRef(true);
+
+  useMEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useMEffect(() => {
     if (!open) return;
@@ -25,7 +31,7 @@ function DiscoveryCallModal({ open, onClose }) {
 
   useMEffect(() => {
     if (open) {
-      setStep(0); setErrors({}); setWeekOffset(0);
+      setStep(0); setErrors({});
       setData({ topic: '', size: '', urgency: '', date: '', slot: '', name: '', email: '', phone: '', note: '', website: '' });
     }
   }, [open]);
@@ -49,15 +55,6 @@ function DiscoveryCallModal({ open, onClose }) {
     { v: 'month', label: 'Within a month', sub: 'Moving but not urgent' },
     { v: 'explore', label: "Just exploring", sub: "Open conversation, no timeline" },
   ];
-
-  const days = [];
-  const base = new Date(); base.setHours(0, 0, 0, 0);
-  for (let i = 0; i < 5; i++) {
-    const d = new Date(base);
-    d.setDate(base.getDate() + 1 + weekOffset * 7 + i);
-    days.push(d);
-  }
-  const slots = ['9:00', '10:30', '13:00', '14:30', '16:00'];
 
   const totalSteps = 3;
   const next = () => {
@@ -96,28 +93,23 @@ function DiscoveryCallModal({ open, onClose }) {
     };
 
     supabaseClient.from('discovery_calls').insert([payload]).then(({ error }) => {
+      if (!isMountedRef.current) return;
       if (error) {
         setErrors({ submit: 'Failed: ' + error.message });
       } else {
         setStep(s => s + 1);
       }
     }).catch(err => {
+      if (!isMountedRef.current) return;
       setErrors({ submit: 'Error: ' + err.message });
     });
   };
 
-  const fmtDayNum = (d) => d.toLocaleDateString('en-GB', { day: 'numeric' });
-  const fmtDayName = (d) => d.toLocaleDateString('en-GB', { weekday: 'short' });
   const fmtPhone = (val) => {
     const digits = val.replace(/\D/g, '').slice(0, 10);
     if (digits.length <= 3) return digits;
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-  };
-  const weekLabel = () => {
-    if (weekOffset === 0) return 'This week';
-    if (weekOffset === 1) return 'Next week';
-    return `In ${weekOffset + 1} weeks`;
   };
 
   return (
@@ -186,58 +178,8 @@ function DiscoveryCallModal({ open, onClose }) {
           )}
 
           {step === 1 && (
-            <div style={{ display: 'none' }}>
-              <div className="tp-modal-step-label">Step two</div>
-              <h4 className="tp-modal-step-title">Pick a <em>time that works</em></h4>
-              <p className="tp-modal-step-sub">Thirty minutes. Video call — we'll send a link with the invite.</p>
-
-              <div className="tp-date-head">
-                <button className="tp-date-nav" onClick={() => setWeekOffset(w => Math.max(0, w - 1))} disabled={weekOffset === 0} aria-label="Previous week">‹</button>
-                <div className="tp-date-label">{weekLabel()}</div>
-                <button className="tp-date-nav" onClick={() => setWeekOffset(w => Math.min(4, w + 1))} disabled={weekOffset === 4} aria-label="Next week">›</button>
-              </div>
-
-              <div className="tp-slot-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-                {days.map((d) => {
-                  const key = d.toISOString().slice(0, 10);
-                  const isSel = data.date === key;
-                  return (
-                    <button key={key} type="button"
-                      className={`tp-slot ${isSel ? 'is-selected' : ''}`}
-                      onClick={() => { upd('date', key); upd('slot', ''); }}
-                      style={{ padding: '12px 6px' }}>
-                      <div style={{ fontSize: 10, letterSpacing: '0.18em', opacity: 0.7, textTransform: 'uppercase' }}>{fmtDayName(d)}</div>
-                      <div style={{ fontFamily: 'var(--tp-font-serif)', fontSize: 22, marginTop: 4, lineHeight: 1 }}>{fmtDayNum(d)}</div>
-                    </button>
-                  );
-                })}
-              </div>
-              {errors.date && <div className="tp-field-error" style={{ marginTop: 8 }}>Pick a day.</div>}
-
-              {data.date && (
-                <>
-                  <div className="tp-label" style={{ marginTop: 22, marginBottom: 10 }}>Times available · London GMT</div>
-                  <div className="tp-slot-grid">
-                    {slots.map((t, i) => {
-                      const disabled = i === 2; // pretend one slot is taken
-                      return (
-                        <button key={t} type="button"
-                          className={`tp-slot ${data.slot === t ? 'is-selected' : ''} ${disabled ? 'is-disabled' : ''}`}
-                          onClick={() => !disabled && upd('slot', t)}>
-                          {t}{disabled ? ' · taken' : ''}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {errors.slot && <div className="tp-field-error" style={{ marginTop: 8 }}>Pick a time.</div>}
-                </>
-              )}
-            </div>
-          )}
-
-          {step === 1 && (
             <div>
-              <div className="tp-modal-step-label">Step three</div>
+              <div className="tp-modal-step-label">Step two</div>
               <h4 className="tp-modal-step-title">Where should we <em>send the invite?</em></h4>
               <p className="tp-modal-step-sub">We'll email a calendar invite with a video link.</p>
 
