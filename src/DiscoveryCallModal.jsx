@@ -59,7 +59,7 @@ function DiscoveryCallModal({ open, onClose }) {
   }
   const slots = ['9:00', '10:30', '13:00', '14:30', '16:00'];
 
-  const totalSteps = 4;
+  const totalSteps = 3;
   const next = () => {
     const e = {};
     if (step === 0) {
@@ -67,9 +67,6 @@ function DiscoveryCallModal({ open, onClose }) {
       if (!data.size) e.size = 1;
       if (!data.urgency) e.urgency = 1;
     } else if (step === 1) {
-      if (!data.date) e.date = 1;
-      if (!data.slot) e.slot = 1;
-    } else if (step === 2) {
       if (!data.name.trim()) e.name = 'Your name helps us prepare.';
       if (!data.email.trim()) e.email = 'We need an email to send the invite.';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) e.email = "That email doesn't look right.";
@@ -79,29 +76,41 @@ function DiscoveryCallModal({ open, onClose }) {
   };
   const back = () => setStep(s => Math.max(s - 1, 0));
 
-  const submit = async () => {
-    if (data.website) return setStep(s => s + 1); // honeypot triggered, silently succeed
-    try {
-      const { error } = await supabaseClient.from('discovery_calls').insert([{
-        topic: data.topic,
-        size: data.size,
-        urgency: data.urgency,
-        date: data.date,
-        slot: data.slot,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        note: data.note,
-      }]);
-      if (error) throw error;
+  const handleSubmit = () => {
+    console.log('Submit clicked!');
+    if (data.website) {
       setStep(s => s + 1);
-    } catch (err) {
-      console.error('Submission error:', err);
-      setErrors({ submit: 'Failed to book. Please try again.' });
+      return;
     }
+
+    const today = new Date().toISOString().split('T')[0];
+    const payload = {
+      topic: data.topic,
+      size: data.size,
+      urgency: data.urgency,
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      note: data.note || null,
+      date: today,
+      slot: 'TBD',
+    };
+
+    console.log('Submitting to Supabase:', payload);
+    supabaseClient.from('discovery_calls').insert([payload]).then(({ error }) => {
+      if (error) {
+        console.error('Supabase error:', error);
+        setErrors({ submit: 'Failed: ' + error.message });
+      } else {
+        console.log('Supabase success!');
+        setStep(s => s + 1);
+      }
+    }).catch(err => {
+      console.error('Request error:', err);
+      setErrors({ submit: 'Error: ' + err.message });
+    });
   };
 
-  const fmtDate = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const fmtDayNum = (d) => d.toLocaleDateString('en-GB', { day: 'numeric' });
   const fmtDayName = (d) => d.toLocaleDateString('en-GB', { weekday: 'short' });
   const fmtPhone = (val) => {
@@ -126,7 +135,7 @@ function DiscoveryCallModal({ open, onClose }) {
 
         {step < totalSteps && (
           <div className="tp-modal-steps">
-            {[0, 1, 2, 3].map(i => (
+            {[0, 1, 2].map(i => (
               <div key={i} className={`tp-modal-step-dot ${i === step ? 'is-active' : ''} ${i < step ? 'is-done' : ''}`} />
             ))}
             <span style={{ marginLeft: 'auto', color: 'var(--tp-slate-500)' }}>Step {step + 1} of {totalSteps}</span>
@@ -182,7 +191,7 @@ function DiscoveryCallModal({ open, onClose }) {
           )}
 
           {step === 1 && (
-            <div>
+            <div style={{ display: 'none' }}>
               <div className="tp-modal-step-label">Step two</div>
               <h4 className="tp-modal-step-title">Pick a <em>time that works</em></h4>
               <p className="tp-modal-step-sub">Thirty minutes. Video call — we'll send a link with the invite.</p>
@@ -231,7 +240,7 @@ function DiscoveryCallModal({ open, onClose }) {
             </div>
           )}
 
-          {step === 2 && (
+          {step === 1 && (
             <div>
               <div className="tp-modal-step-label">Step three</div>
               <h4 className="tp-modal-step-title">Where should we <em>send the invite?</em></h4>
@@ -261,7 +270,7 @@ function DiscoveryCallModal({ open, onClose }) {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 2 && (
             <div>
               <div className="tp-modal-step-label">Almost there</div>
               <h4 className="tp-modal-step-title">Review and <em>confirm</em></h4>
@@ -281,10 +290,6 @@ function DiscoveryCallModal({ open, onClose }) {
                   <div className="tp-modal-review-val">{urgencies.find(u => u.v === data.urgency)?.label}</div>
                 </div>
                 <div className="tp-modal-review-row">
-                  <div className="tp-modal-review-label">When</div>
-                  <div className="tp-modal-review-val">{fmtDate(new Date(data.date))} · {data.slot} GMT</div>
-                </div>
-                <div className="tp-modal-review-row">
                   <div className="tp-modal-review-label">Who</div>
                   <div className="tp-modal-review-val">{data.name} · {data.email}</div>
                 </div>
@@ -295,14 +300,18 @@ function DiscoveryCallModal({ open, onClose }) {
           {step === totalSteps && (
             <div className="tp-modal-success">
               <div className="tp-modal-success-mark" aria-hidden="true">✓</div>
-              <div className="tp-eyebrow tp-eyebrow--amber">Booked</div>
-              <h4 className="tp-modal-step-title" style={{ textAlign: 'center' }}>See you <em>soon, {data.name.split(' ')[0] || 'there'}</em></h4>
+              <div className="tp-eyebrow tp-eyebrow--amber">Request received</div>
+              <h4 className="tp-modal-step-title" style={{ textAlign: 'center' }}>Thanks, <em>{data.name.split(' ')[0] || 'there'}</em></h4>
               <p className="tp-modal-step-sub" style={{ textAlign: 'center', maxWidth: 440 }}>
-                Your discovery call is provisionally held for{' '}
-                <strong style={{ color: 'var(--tp-midnight)' }}>{fmtDate(new Date(data.date))} at {data.slot} GMT</strong>.
-                A calendar invite will arrive at <strong style={{ color: 'var(--tp-midnight)' }}>{data.email}</strong> within the hour.
+                We've received your discovery call request. We'll review your information and be in touch within 24 hours to confirm a time that works for everyone.
               </p>
               <button className="tp-btn tp-btn-outline" onClick={onClose}>Close</button>
+            </div>
+          )}
+
+          {errors.submit && (
+            <div style={{ padding: '12px', backgroundColor: '#fee', borderRadius: '8px', color: '#c00', marginBottom: '12px', textAlign: 'center' }}>
+              {errors.submit}
             </div>
           )}
         </div>
@@ -314,7 +323,14 @@ function DiscoveryCallModal({ open, onClose }) {
             ) : (
               <span style={{ fontSize: 11, color: 'var(--tp-slate)', letterSpacing: '0.1em' }}>30 minutes · No obligation</span>
             )}
-            <button className="tp-btn tp-btn-primary" onClick={step === totalSteps - 1 ? submit : next}>
+            <button className="tp-btn tp-btn-primary" onClick={() => {
+              console.log('Button clicked - step:', step, 'totalSteps:', totalSteps, 'should submit:', step === totalSteps - 1);
+              if (step === totalSteps - 1) {
+                handleSubmit();
+              } else {
+                next();
+              }
+            }}>
               {step === totalSteps - 1 ? 'Confirm booking →' : 'Continue →'}
             </button>
           </div>
