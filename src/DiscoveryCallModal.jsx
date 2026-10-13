@@ -79,7 +79,6 @@ function DiscoveryCallModal({ open, onClose }) {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
     const payload = {
       topic: data.topic,
       size: data.size,
@@ -88,14 +87,23 @@ function DiscoveryCallModal({ open, onClose }) {
       email: data.email,
       phone: data.phone || null,
       note: data.note || null,
-      date: today,
-      slot: 'TBD',
     };
 
-    supabaseClient.from('discovery_calls').insert([payload]).then(({ error }) => {
+    // Call Supabase Edge Function for server-side validation and rate limiting
+    const supabaseUrl = SUPABASE_URL;
+    const functionUrl = `${supabaseUrl}/functions/v1/submit-discovery-call`;
+
+    fetch(functionUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify(payload),
+    }).then(res => res.json()).then(data => {
       if (!isMountedRef.current) return;
-      if (error) {
-        setErrors({ submit: 'Failed: ' + error.message });
+      if (data.error) {
+        setErrors({ submit: data.error });
       } else {
         setStep(s => s + 1);
       }
