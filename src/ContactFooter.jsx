@@ -109,6 +109,7 @@ function ContactForm({ onOpenCall }) {
               </div>
               <input type="text" name="website" value={form.website} onChange={upd('website')} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} tabIndex="-1" autoComplete="off" />
               <button type="submit" className="tp-btn tp-btn-primary tp-btn-full tp-btn-lg">Send message →</button>
+              {errors.submit && <div className="tp-field-error">{errors.submit}</div>}
               <p className="tp-form-note">Your note goes straight to a Truepoint partner. We'll reply within one working day.</p>
             </form>
           ) : (
