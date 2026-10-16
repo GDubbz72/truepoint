@@ -17,25 +17,33 @@ function ContactForm({ onOpenCall }) {
     if (!form.note.trim() || form.note.trim().length < 10) e.note = 'A sentence or two is plenty — tell us what\'s on your mind.';
     return e;
   };
-  // No async/await here: the in-browser Babel transform doesn't run async bodies, so preventDefault never fired and the form posted natively.
+  // Keep this non-async: an async handler failed under the in-browser Babel build before preventDefault() ran, so the form posted natively.
   const onSubmit = (ev) => {
     ev.preventDefault();
     if (form.website) return setSent(true); // honeypot triggered, silently succeed
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    supabaseClient.from('contact_submissions').insert([{
-      name: form.name,
-      email: form.email,
-      company: form.company || null,
-      topic: form.topic,
-      note: form.note,
-    }]).then(({ error }) => {
-      if (error) throw error;
-      setSent(true);
-    }).catch(err => {
+    setErrors({});
+    const fail = (err) => {
       console.error('Submission error:', err);
       setErrors({ submit: 'Failed to send. Please try again.' });
-    });
+    };
+    let request;
+    try {
+      request = supabaseClient.from('contact_submissions').insert([{
+        name: form.name,
+        email: form.email,
+        company: form.company || null,
+        topic: form.topic,
+        note: form.note,
+      }]);
+    } catch (err) {
+      return fail(err);
+    }
+    request.then(({ error }) => {
+      if (error) throw error;
+      setSent(true);
+    }).catch(fail);
   };
 
   return (
