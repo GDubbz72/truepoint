@@ -1,5 +1,5 @@
 /* global React */
-function Promise() {
+function PromiseSection() {
   return (
     <section id="promise" className="tp-promise tp-reveal">
       <div className="tp-promise-rule" />
@@ -17,7 +17,7 @@ function Promise() {
     </section>
   );
 }
-window.PromiseSection = Promise;
+window.PromiseSection = PromiseSection;
 
 function Services() {
   const services = [
