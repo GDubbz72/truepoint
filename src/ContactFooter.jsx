@@ -17,25 +17,25 @@ function ContactForm({ onOpenCall }) {
     if (!form.note.trim() || form.note.trim().length < 10) e.note = 'A sentence or two is plenty — tell us what\'s on your mind.';
     return e;
   };
-  const onSubmit = async (ev) => {
+  // No async/await here: the in-browser Babel transform doesn't run async bodies, so preventDefault never fired and the form posted natively.
+  const onSubmit = (ev) => {
     ev.preventDefault();
     if (form.website) return setSent(true); // honeypot triggered, silently succeed
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    try {
-      const { error } = await supabaseClient.from('contact_submissions').insert([{
-        name: form.name,
-        email: form.email,
-        company: form.company || null,
-        topic: form.topic,
-        note: form.note,
-      }]);
+    supabaseClient.from('contact_submissions').insert([{
+      name: form.name,
+      email: form.email,
+      company: form.company || null,
+      topic: form.topic,
+      note: form.note,
+    }]).then(({ error }) => {
       if (error) throw error;
       setSent(true);
-    } catch (err) {
+    }).catch(err => {
       console.error('Submission error:', err);
       setErrors({ submit: 'Failed to send. Please try again.' });
-    }
+    });
   };
 
   return (
