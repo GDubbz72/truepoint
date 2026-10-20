@@ -62,24 +62,6 @@ function ContactForm({ onOpenCall }) {
           <button className="tp-btn tp-btn-primary tp-btn-lg" onClick={onOpenCall}>
             Book a Discovery Call →
           </button>
-          <div className="tp-contact-meta" style={{ marginTop: 40 }}>
-            <div className="tp-contact-meta-item">
-              <span className="tp-label">Email</span>
-              <a href="mailto:w.barrington@truepointps.com">w.barrington@truepointps.com</a>
-            </div>
-            <div className="tp-contact-meta-item">
-              <span className="tp-label">Phone</span>
-              <a href="tel:+15555551111">(555) 555-1111</a>
-            </div>
-            <div className="tp-contact-meta-item">
-              <span className="tp-label">Web</span>
-              <a href="https://www.truepointps.com">www.truepointps.com</a>
-            </div>
-            <div className="tp-contact-meta-item">
-              <span className="tp-label">Hours</span>
-              <span>Mon–Fri · Replies within one working day</span>
-            </div>
-          </div>
         </div>
         <div className="tp-contact-right tp-reveal">
           {!sent ? (
@@ -156,7 +138,7 @@ function FinalCTA({ ctaText, onOpenCall }) {
           <a href="#contact" className="tp-btn tp-btn-outline-dark tp-btn-lg">Send a message instead</a>
         </div>
         <div className="tp-final-cta-meta">
-          w.barrington@truepointps.com · (555) 555-1111
+          wendy@truepointpeoplesolutions.ca · (647) 705-2080
         </div>
       </div>
     </section>
@@ -168,7 +150,7 @@ function Footer() {
   const cols = [
     { title: 'What we do', items: ['HR Consulting', 'Coaching', 'Leadership Training', 'Team development'] },
     { title: 'Company', items: ['Our approach', 'Who we serve', 'How we work', 'FAQ'] },
-    { title: 'Contact', items: ['w.barrington@truepointps.com', '(555) 555-1111', 'www.truepointps.com', 'LinkedIn'] },
+    { title: 'Contact', items: ['wendy@truepointpeoplesolutions.ca', '(647) 705-2080', 'truepointpeoplesolutions.ca', 'LinkedIn'] },
   ];
   return (
     <footer className="tp-footer">
