@@ -138,7 +138,7 @@ function FinalCTA({ ctaText, onOpenCall }) {
           <a href="#contact" className="tp-btn tp-btn-outline-dark tp-btn-lg">Send a message instead</a>
         </div>
         <div className="tp-final-cta-meta">
-          w.barrington@truepointps.com · (555) 555-1111
+          wendy@truepointpeoplesolutions.ca · (647) 705-2080
         </div>
       </div>
     </section>
@@ -150,7 +150,7 @@ function Footer() {
   const cols = [
     { title: 'What we do', items: ['HR Consulting', 'Coaching', 'Leadership Training', 'Team development'] },
     { title: 'Company', items: ['Our approach', 'Who we serve', 'How we work', 'FAQ'] },
-    { title: 'Contact', items: ['w.barrington@truepointps.com', '(555) 555-1111', 'www.truepointps.com', 'LinkedIn'] },
+    { title: 'Contact', items: ['wendy@truepointpeoplesolutions.ca', '(647) 705-2080', 'truepointpeoplesolutions.ca', 'LinkedIn'] },
   ];
   return (
     <footer className="tp-footer">
